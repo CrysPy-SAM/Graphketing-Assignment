@@ -4,6 +4,13 @@ An Express REST API for registering users, organizing projects, assigning tasks,
 
 ## Local setup
 
+Clone the [Graphketing-Assignment repository](https://github.com/CrysPy-SAM/Graphketing-Assignment).
+
+```sh
+git clone https://github.com/CrysPy-SAM/Graphketing-Assignment.git
+cd Graphketing-Assignment
+```
+
 You need Node.js 22+, npm, and PostgreSQL 16 or newer. Create a database and a dedicated role using a PostgreSQL administrator session in psql.
 
 ```sql

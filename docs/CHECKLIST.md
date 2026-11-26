@@ -1,6 +1,6 @@
 # Graphketing assessment compliance report
 
-The application requirements in the original assessment were verified from a fresh clone. All 13 required endpoints responded successfully in both the local Node.js setup and Docker Compose. Publishing the local commits to the GitHub repository remains the submission step.
+The application requirements in the original assessment were verified from a fresh clone. All 13 required endpoints responded successfully in both the local Node.js setup and Docker Compose. The submission repository is [Graphketing-Assignment](https://github.com/CrysPy-SAM/Graphketing-Assignment) and the submission branch is `main`.
 
 ## Mandatory requirements
 
@@ -18,7 +18,7 @@ The application requirements in the original assessment were verified from a fre
 | Input validation and HTTP errors | Tests covered malformed path parameters and JSON, oversized payloads, unsupported character encoding, invalid or unexpected fields, invalid references, expired credentials, disallowed actions, missing resources, duplicate email, authentication throttling and generic 500 responses. |
 | Environment configuration and secret handling | The fresh-clone workflow used an ignored `.env`. Source review checked password hashing, JWT signature and issuer verification, parameterized SQL and validation of writable fields. A pattern scan of tracked Git history found only the connection and secret placeholders in `.env.example`. The HTTP evidence was checked for redaction. |
 | Git, README, schema, API documentation, environment example and execution evidence | The project has local commits, [setup instructions](../README.md), [schema SQL](../database/schema.sql), [Postman collection](task-management.postman_collection.json), [environment example](../.env.example) and [18 sanitized live HTTP exchanges](api-evidence.json). The PowerShell cache under `Microsoft/` was inspected by name and metadata and excluded from both Git and the Docker build context. |
-| GitHub submission | Pending publication. The local branch is `main`. See the commands below. |
+| GitHub submission | The designated repository is `CrysPy-SAM/Graphketing-Assignment`. See the clone command below. |
 
 ## Evaluation criteria
 
@@ -38,12 +38,9 @@ The Compose build passed. Both services became healthy, and an account created t
 
 Refresh tokens, task activity logs and soft deletion are optional and are outside the implemented scope. The repository documents the local-only HTTP setup, process-local rate limiting and offset pagination.
 
-## Publish to GitHub
-
-Create an empty GitHub repository named `graphketing-backend-assessment`. Replace `YOUR_GITHUB_USERNAME` with the repository owner and run these commands from the project root.
+## Clone the submission repository
 
 ```sh
-git status --short
-git remote add origin https://github.com/YOUR_GITHUB_USERNAME/graphketing-backend-assessment.git
-git push -u origin main
+git clone https://github.com/CrysPy-SAM/Graphketing-Assignment.git
+cd Graphketing-Assignment
 ```
