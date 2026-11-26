@@ -7,7 +7,7 @@
         "path": "/api/auth/register",
         "body": {
           "name": "Owner",
-          "email": "owner-f530977ab2@example.test",
+          "email": "owner-e6f68d01ab@example.test",
           "password": "[redacted]"
         }
       },
@@ -19,9 +19,9 @@
           "data": {
             "id": 1,
             "name": "Owner",
-            "email": "owner-f530977ab2@example.test",
+            "email": "owner-e6f68d01ab@example.test",
             "role": "User",
-            "created_at": "2026-11-26T06:18:09.180Z"
+            "created_at": "2026-11-26T06:28:05.313Z"
           }
         }
       }
@@ -31,7 +31,7 @@
         "method": "POST",
         "path": "/api/auth/login",
         "body": {
-          "email": "owner-f530977ab2@example.test",
+          "email": "owner-e6f68d01ab@example.test",
           "password": "[redacted]"
         }
       },
@@ -45,9 +45,9 @@
             "user": {
               "id": 1,
               "name": "Owner",
-              "email": "owner-f530977ab2@example.test",
+              "email": "owner-e6f68d01ab@example.test",
               "role": "User",
-              "created_at": "2026-11-26T06:18:09.180Z"
+              "created_at": "2026-11-26T06:28:05.313Z"
             }
           }
         }
@@ -59,7 +59,7 @@
         "path": "/api/auth/register",
         "body": {
           "name": "Assignee",
-          "email": "assignee-f530977ab2@example.test",
+          "email": "assignee-e6f68d01ab@example.test",
           "password": "[redacted]"
         }
       },
@@ -71,9 +71,9 @@
           "data": {
             "id": 2,
             "name": "Assignee",
-            "email": "assignee-f530977ab2@example.test",
+            "email": "assignee-e6f68d01ab@example.test",
             "role": "User",
-            "created_at": "2026-11-26T06:18:10.843Z"
+            "created_at": "2026-11-26T06:28:05.925Z"
           }
         }
       }
@@ -83,7 +83,7 @@
         "method": "POST",
         "path": "/api/auth/login",
         "body": {
-          "email": "assignee-f530977ab2@example.test",
+          "email": "assignee-e6f68d01ab@example.test",
           "password": "[redacted]"
         }
       },
@@ -97,9 +97,9 @@
             "user": {
               "id": 2,
               "name": "Assignee",
-              "email": "assignee-f530977ab2@example.test",
+              "email": "assignee-e6f68d01ab@example.test",
               "role": "User",
-              "created_at": "2026-11-26T06:18:10.843Z"
+              "created_at": "2026-11-26T06:28:05.925Z"
             }
           }
         }
@@ -124,7 +124,7 @@
             "name": "Release verification",
             "description": null,
             "created_by": 1,
-            "created_at": "2026-11-26T06:18:11.383Z"
+            "created_at": "2026-11-26T06:28:06.238Z"
           }
         }
       }
@@ -171,8 +171,8 @@
             "priority": "High",
             "status": "Pending",
             "due_date": "2027-01-15",
-            "created_at": "2026-11-26T06:18:11.414Z",
-            "updated_at": "2026-11-26T06:18:11.414Z"
+            "created_at": "2026-11-26T06:28:06.261Z",
+            "updated_at": "2026-11-26T06:28:06.261Z"
           }
         }
       }
@@ -204,8 +204,8 @@
             "priority": "High",
             "status": "Pending",
             "due_date": "2027-01-15",
-            "created_at": "2026-11-26T06:18:11.431Z",
-            "updated_at": "2026-11-26T06:18:11.431Z"
+            "created_at": "2026-11-26T06:28:06.278Z",
+            "updated_at": "2026-11-26T06:28:06.278Z"
           }
         }
       }
@@ -237,8 +237,8 @@
             "priority": "High",
             "status": "Pending",
             "due_date": "2027-01-15",
-            "created_at": "2026-11-26T06:18:11.449Z",
-            "updated_at": "2026-11-26T06:18:11.449Z"
+            "created_at": "2026-11-26T06:28:06.289Z",
+            "updated_at": "2026-11-26T06:28:06.289Z"
           }
         }
       }
@@ -259,7 +259,7 @@
             "name": "Release verification",
             "description": null,
             "created_by": 1,
-            "created_at": "2026-11-26T06:18:11.383Z"
+            "created_at": "2026-11-26T06:28:06.238Z"
           }
         }
       }
@@ -283,7 +283,7 @@
             "name": "Release verification",
             "description": "Demo project",
             "created_by": 1,
-            "created_at": "2026-11-26T06:18:11.383Z"
+            "created_at": "2026-11-26T06:28:06.238Z"
           }
         }
       }
@@ -308,8 +308,8 @@
             "priority": "High",
             "status": "Pending",
             "due_date": "2027-01-15",
-            "created_at": "2026-11-26T06:18:11.449Z",
-            "updated_at": "2026-11-26T06:18:11.449Z"
+            "created_at": "2026-11-26T06:28:06.289Z",
+            "updated_at": "2026-11-26T06:28:06.289Z"
           }
         }
       }
@@ -337,8 +337,8 @@
             "priority": "High",
             "status": "Completed",
             "due_date": "2027-01-15",
-            "created_at": "2026-11-26T06:18:11.449Z",
-            "updated_at": "2026-11-26T06:18:11.509Z"
+            "created_at": "2026-11-26T06:28:06.289Z",
+            "updated_at": "2026-11-26T06:28:06.329Z"
           }
         }
       }
@@ -361,9 +361,9 @@
               "status": "Pending",
               "due_date": "2027-01-15",
               "priority": "High",
-              "created_at": "2026-11-26T06:18:11.431801+00:00",
+              "created_at": "2026-11-26T06:28:06.278882+00:00",
               "project_id": 1,
-              "updated_at": "2026-11-26T06:18:11.431801+00:00",
+              "updated_at": "2026-11-26T06:28:06.278882+00:00",
               "assigned_to": 2,
               "description": null
             }
@@ -395,9 +395,9 @@
               "status": "Pending",
               "due_date": "2027-01-15",
               "priority": "High",
-              "created_at": "2026-11-26T06:18:11.414926+00:00",
+              "created_at": "2026-11-26T06:28:06.261606+00:00",
               "project_id": 1,
-              "updated_at": "2026-11-26T06:18:11.414926+00:00",
+              "updated_at": "2026-11-26T06:28:06.261606+00:00",
               "assigned_to": 2,
               "description": null
             }

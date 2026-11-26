@@ -36,7 +36,7 @@ The initializer uses a transaction and an advisory lock, and can be rerun on thi
 
 ## Docker Compose
 
-Set `POSTGRES_PASSWORD` and `JWT_SECRET` in `.env` before running `docker compose up --build`. Compose starts PostgreSQL, waits for its health check, initializes the schema, and starts the API on the configured host port. The named volume persists the database across `docker compose down` and subsequent startup. PostgreSQL stays on the Compose network.
+Copy `.env.example` to `.env` if needed, then uncomment and set `POSTGRES_PASSWORD` and set `JWT_SECRET`. Run `docker compose up --build`. Compose waits for PostgreSQL, initializes the schema, and checks HTTP readiness. The API is published on `127.0.0.1` at the configured host port. The named volume persists the database across `docker compose down` and subsequent startup. PostgreSQL stays on the Compose network.
 
 ## Authentication and permissions
 
@@ -82,7 +82,7 @@ GET /api/tasks?search=backend&status=In%20Progress&priority=High&project_id=1&as
 
 Filters combine with AND. Search matches a case-insensitive literal substring of the title. Pages are ordered by descending ID and default to page 1 with 10 records, capped at 100 per page. Responses contain `pagination.total`, `page`, `limit` and `totalPages`. A valid page beyond the last returns an empty array and retains the count. Priorities are Low, Medium and High. Statuses are Pending, In Progress and Completed. Due dates use `YYYY-MM-DD`.
 
-The [Postman collection](docs/task-management.postman_collection.json) includes all 13 operations. Set local Postman environment values for baseUrl, email and password. Login and successful create operations populate the bearer token and resource IDs in that environment.
+The [Postman collection](docs/task-management.postman_collection.json) includes all 13 operations. For a full collection run against a disposable instance, set `baseUrl`, `email` and `password` in a local Postman environment. Use an unused email and a password of at least eight characters and at most 72 UTF-8 bytes. Login and creation requests populate the bearer token and resource IDs. The final requests remove the created task and project.
 
 ## Architecture and database
 
@@ -95,10 +95,10 @@ SQL values are bound parameters. Strict request schemas determine writable colum
 
 ## Tests and execution evidence
 
-Set `TEST_DATABASE_URL` in `.env` to the dedicated test database, then run `npm test`. The suite creates and drops its own randomly named schema, and uses Supertest against Express with a real PostgreSQL connection.
+Uncomment and set `TEST_DATABASE_URL` in `.env` to the dedicated test database, then run `npm test`. The suite creates and drops its own randomly named schema, and uses Supertest against Express with a real PostgreSQL connection.
 
-The suite passed all 14 tests against PostgreSQL 18. The Docker Compose image built successfully and all 13 routes were exercised in 18 live HTTP requests against PostgreSQL 16. See the [sanitized HTTP evidence](docs/api-evidence.json). To recreate the HTTP evidence, start the API against a disposable database, optionally set `API_BASE_URL` to its local URL, and run `npm run evidence`. This registers disposable accounts, creates and removes a project, and records sanitized HTTP exchanges. To capture screenshots manually, repeat the requests using Swagger UI and crop any credentials or bearer tokens before saving the images.
+From a fresh clone, all 16 integration tests passed against PostgreSQL 16.16. The local API and Docker Compose each completed 18 HTTP requests covering all 13 required routes. The Postman collection also passed all 13 expected-status checks in Newman. See the [compliance report](docs/CHECKLIST.md) and [sanitized Compose HTTP evidence](docs/api-evidence.json). To recreate the HTTP evidence, start the API against a disposable database, optionally set `API_BASE_URL` to its local URL, and run `npm run evidence`. This registers disposable accounts, creates and removes a project, and records sanitized HTTP exchanges. To capture screenshots manually, repeat the requests using Swagger UI and crop any credentials or bearer tokens before saving the images.
 
 ## Scope and trade-offs
 
-The implemented bonuses are Docker Compose, Swagger UI and automated integration tests. JWTs expire; logging in again issues a new token. The IP rate limiter is in-memory and applies per API process. This version uses hard deletion and does not track a task activity history. Offset pagination is predictable for this workload, while simultaneous inserts can shift later pages. See the [interview guide](docs/INTERVIEW_GUIDE.md) for design details.
+All mandatory application features are implemented. The bonuses included are Docker Compose, Swagger UI and automated integration tests. Optional refresh tokens, task activity logs and soft deletion are outside the implemented scope. Users log in again to replace an expired JWT. The IP rate limiter uses in-memory counters per API process. The Compose setup serves local HTTP. Offset pagination is predictable for this workload, while simultaneous inserts can shift later pages. See the [interview guide](docs/INTERVIEW_GUIDE.md) for design details.
