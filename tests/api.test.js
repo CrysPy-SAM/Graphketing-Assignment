@@ -33,7 +33,8 @@ beforeAll(async () => {
   await createUser(pool, credentials('Admin'), 'Admin')
   async function signIn(name) {
     const { email } = credentials(name)
-    const { body } = await request(app).post('/api/auth/login').send({ email, password }).expect(200)
+    const { body } = await request(app).post('/api/auth/login').send({ email, password })
+      .expect(200).expect('Cache-Control', 'no-store')
     return body.data
   }
   owner = await signIn('Owner')
@@ -207,6 +208,7 @@ test('invalid input and nonexistent resources use consistent JSON errors', async
   await api('post', '/projects', owner).send({ name: 'Valid', created_by: outsider.user.id }).expect(400)
   await api('put', '/projects/1', owner).send({}).expect(400)
   await api('get', '/projects/nope', owner).expect(400)
+  await api('get', '/projects/%', owner).expect(400, { success: false, message: 'Invalid URL parameter' })
   await api('get', '/projects/2147483647', owner).expect(404)
   for (const query of ['limit=101', 'page=0', 'project_id=2147483648', 'assigned_to=1&assigned_to=2', 'status=Done', 'unexpected=1']) {
     await api('get', '/tasks?' + query, owner).expect(400)
@@ -217,6 +219,8 @@ test('invalid input and nonexistent resources use consistent JSON errors', async
 
 test('malformed JSON, oversized payloads and auth throttles use JSON errors', async () => {
   await request(app).post('/api/auth/register').type('json').send('{').expect(400)
+  await request(app).post('/api/auth/register').set('Content-Type', 'application/json; charset=iso-8859-1')
+    .send('{}').expect(415)
   await request(app).post('/api/auth/register').send({ extra: 'a'.repeat(17000) }).expect(413)
   const limitedApp = createApp(pool, config)
   for (let index = 0; index < 20; index++) {
@@ -231,4 +235,48 @@ test('Swagger UI and its same-origin assets expose all 13 operations', async () 
   await request(app).get('/api-docs/swagger-ui-init.js').expect(200)
   const { body } = await request(app).get('/api-docs.json').expect(200)
   expect(Object.values(body.paths).flatMap(Object.keys)).toHaveLength(13)
+})
+
+test('the database enforces references, constraints and timestamp behavior independently of HTTP', async () => {
+  const { id } = await project()
+  const account = await createUser(pool, credentials('SchemaAssignee'))
+  await expect(pool.query('DELETE FROM users WHERE id = $1', [owner.user.id])).rejects.toHaveProperty('code', '23503')
+  await expect(pool.query('INSERT INTO projects (name, created_by) VALUES ($1, $2)', ['Missing creator', 2147483647]))
+    .rejects.toHaveProperty('code', '23503')
+  const insert = 'INSERT INTO tasks (title, project_id, assigned_to, due_date) VALUES ($1, $2, $3, $4)'
+  await expect(pool.query(insert, ['Missing project', 2147483647, account.id, due_date])).rejects.toHaveProperty('code', '23503')
+  await expect(pool.query(insert, ['Missing assignee', id, 2147483647, due_date])).rejects.toHaveProperty('code', '23503')
+  await expect(pool.query(insert, ['Missing due date', id, account.id, null])).rejects.toHaveProperty('code', '23502')
+  const { rows: [created] } = await pool.query(insert + ' RETURNING id, status, priority, updated_at',
+    ['Database assignment', id, account.id, due_date])
+  expect(created).toMatchObject({ status: 'Pending', priority: 'Medium' })
+  await expect(pool.query('UPDATE tasks SET status = $1 WHERE id = $2', ['Invalid', created.id]))
+    .rejects.toHaveProperty('code', '23514')
+  await expect(pool.query('UPDATE tasks SET priority = $1 WHERE id = $2', ['Invalid', created.id]))
+    .rejects.toHaveProperty('code', '23514')
+  await expect(pool.query('UPDATE users SET role = $1 WHERE id = $2', ['Invalid', account.id]))
+    .rejects.toHaveProperty('code', '23514')
+  await pool.query('DELETE FROM users WHERE id = $1', [account.id])
+  const { rows: [unassigned] } = await pool.query('SELECT assigned_to, updated_at FROM tasks WHERE id = $1', [created.id])
+  expect(unassigned.assigned_to).toBeNull()
+  expect(unassigned.updated_at.getTime()).toBeGreaterThan(created.updated_at.getTime())
+  const { rows: indexes } = await pool.query('SELECT indexname, indexdef FROM pg_indexes WHERE schemaname = current_schema()')
+  expect(Object.fromEntries(indexes.map(index => [index.indexname, index.indexdef]))).toMatchObject({
+    users_email_key: expect.stringMatching(/UNIQUE.*\(email\)$/),
+    projects_creator_idx: expect.stringMatching(/\(created_by\)$/),
+    tasks_project_idx: expect.stringMatching(/\(project_id\)$/),
+    tasks_assignee_project_idx: expect.stringMatching(/\(assigned_to, project_id\)$/)
+  })
+})
+
+test('unexpected failures return generic JSON without internal details', async () => {
+  const failingPool = { query: async () => { throw new Error('internal database detail') } }
+  const errorLog = jest.spyOn(console, 'error').mockImplementation(() => {})
+  try {
+    await request(createApp(failingPool, config)).get('/api/projects').auth(owner.accessToken, { type: 'bearer' })
+      .expect(500, { success: false, message: 'Internal server error' })
+    expect(errorLog).toHaveBeenCalledTimes(1)
+  } finally {
+    errorLog.mockRestore()
+  }
 })

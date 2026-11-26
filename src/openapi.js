@@ -9,7 +9,8 @@ const timestamp = { type: 'string', format: 'date-time' }
 const nullable = schema => ({ anyOf: [schema, { type: 'null' }] })
 const list = items => ({ type: 'array', items })
 const json = (schema, example) => ({ 'application/json': { schema, ...(example && { example }) } })
-const id = { name: 'id', in: 'path', required: true, schema: { ...integer, minimum: 1 } }
+const positiveId = { ...integer, minimum: 1, maximum: 2147483647 }
+const id = { name: 'id', in: 'path', required: true, schema: positiveId }
 
 const user = { id: 1, name: 'Taylor', email: 'taylor@example.test', role: 'User', created_at: '2026-01-01T00:00:00Z' }
 const project = { id: 1, name: 'Website', description: null, created_by: 1, created_at: user.created_at }
@@ -23,9 +24,9 @@ const enums = {
   priority: { type: 'string', enum: ['Low', 'Medium', 'High'] }
 }
 const filters = {
-  search: { type: 'string', description: 'Case-insensitive literal substring in the task title', example: 'backend', maxLength: 200 },
-  ...enums, assigned_to: { ...integer, minimum: 1 }, project_id: { ...integer, minimum: 1 },
-  page: { ...integer, minimum: 1, default: 1 }, limit: { ...integer, minimum: 1, maximum: 100, default: 10 }
+  search: { type: 'string', description: 'Case-insensitive literal substring in the task title', example: 'backend', minLength: 1, maxLength: 200 },
+  ...enums, assigned_to: positiveId, project_id: positiveId,
+  page: { ...positiveId, default: 1 }, limit: { ...integer, minimum: 1, maximum: 100, default: 10 }
 }
 const errors = {
   400: 'Invalid input or reference', 401: 'Missing, invalid or expired credentials',

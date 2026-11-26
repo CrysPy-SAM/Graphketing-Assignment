@@ -8,10 +8,10 @@ const integerQuery = z.string().regex(/^[1-9]\d*$/).transform(Number)
 const idQuery = integerQuery.pipe(id)
 const status = z.enum(['Pending', 'In Progress', 'Completed'])
 const priority = z.enum(['Low', 'Medium', 'High'])
-const email = text(254).pipe(z.email()).transform(value => value.toLowerCase())
-const password = z.string().min(8).refine(value => Buffer.byteLength(value) <= 72, 'Use at most 72 UTF-8 bytes')
+const email = text(254).pipe(z.email()).transform(value => value.toLowerCase()).meta({ format: 'email' })
+const password = z.string().min(8).max(72).refine(value => Buffer.byteLength(value) <= 72, 'Use at most 72 UTF-8 bytes').describe('At most 72 UTF-8 bytes.')
 const credentials = { email, password }
-const nonempty = shape => z.strictObject(shape).partial().refine(value => Object.keys(value).length > 0, 'Provide at least one field')
+const nonempty = shape => z.strictObject(shape).partial().refine(value => Object.keys(value).length > 0, 'Provide at least one field').meta({ minProperties: 1 })
 
 export const registration = z.strictObject({ name: text(120), ...credentials })
 export const login = z.strictObject(credentials)

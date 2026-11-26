@@ -32,11 +32,14 @@ export function authHandlers(pool, config) {
       if (!record) fallbackHash ??= bcrypt.hash('unused-login-placeholder', 12)
       const valid = await bcrypt.compare(password, record?.password ?? await fallbackHash)
       if (!record || !valid) throw new HttpError(401, 'Invalid email or password')
-      const { password: hash, ...user } = record
+      const { id, name, role, created_at } = record
       const accessToken = jwt.sign({}, config.JWT_SECRET, {
-        algorithm: 'HS256', subject: String(user.id), issuer: 'graphketing-task-api', expiresIn: config.JWT_EXPIRES_IN
+        algorithm: 'HS256', subject: String(id), issuer: 'graphketing-task-api', expiresIn: config.JWT_EXPIRES_IN
       })
-      return success(res, 200, 'Login successful', { accessToken, user })
+      res.set('Cache-Control', 'no-store')
+      return success(res, 200, 'Login successful', {
+        accessToken, user: { id, name, email: record.email, role, created_at }
+      })
     }
   }
 }

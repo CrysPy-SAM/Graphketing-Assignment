@@ -11,6 +11,9 @@ export function success(res, status, message, data, extra = {}) {
 
 export function handleError(error, req, res, next) {
   if (res.headersSent) return next(error)
+  if (error instanceof URIError && error.status === 400) {
+    return res.status(400).json({ success: false, message: 'Invalid URL parameter' })
+  }
   const known = {
     '23505': [409, 'A record with this value already exists'],
     '23503': [400, 'A referenced record does not exist or is still in use'],
